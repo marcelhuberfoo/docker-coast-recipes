@@ -7,8 +7,7 @@ USER root
 RUN sed -r -i -e ':a;N;$!ba' -e 's|#(\[multilib\]\n)#([^\n]*\n)|\1\2|' /etc/pacman.conf
 RUN echo -e '[infinality-bundle]\nServer = http://bohoomil.com/repo/$arch\n[infinality-bundle-fonts]\nServer = http://bohoomil.com/repo/fonts' >> /etc/pacman.conf
 RUN pacman-key --recv-keys 962DDE58 && pacman-key --lsign-key 962DDE58
-RUN pacman -Syyu --noconfirm && \
-    pacman-db-upgrade && \
+RUN pacman -Syy && \
     printf "\\ny\\ny\\n" | pacman -S  multilib-devel && \
     pacman -S --noconfirm python2 git lib32-openssl gdb doxygen graphviz \
     fontconfig-infinality-ultimate ibfonts-meta-base && \
