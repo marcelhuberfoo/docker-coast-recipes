@@ -15,6 +15,7 @@ RUN rm -f /var/lib/pacman/sync/*.db
 
 ADD entrypoint.sh /
 ADD pip.conf /$UNAME/.pip/
+RUN sed -i "s|USER|$UNAME|" /$UNAME/.pip/pip.conf
 ADD coast-project.pem /$UNAME/
 RUN chown -R $UNAME:$GNAME /$UNAME/
 
