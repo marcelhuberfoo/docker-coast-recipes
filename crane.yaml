@@ -1,0 +1,24 @@
+groups:
+  default:
+  - recipes
+containers:
+  recipes: &cref
+    build:
+      context: .
+      file: Dockerfile
+    image: marcelhuberfoo/docker-coast-recipes
+    run: &crefrun
+      detach: false
+#      env:
+      stop-signal: SIGINT
+#      volume:
+      publish:
+      - "51200:51200"
+      - "51201:51201"
+      interactive: true
+      tty: true
+    exec:
+      interactive: true
+      tty: true
+  cshell: { <<: *cref, run: { <<: *crefrun, detach, entrypoint: /bin/bash, tty: true, interactive: true } }
+volumes:

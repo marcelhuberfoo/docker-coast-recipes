@@ -16,24 +16,19 @@ RUN rm -f /var/lib/pacman/sync/*.db
 ADD entrypoint.sh /
 ADD pip.conf /$UNAME/.pip/
 RUN sed -i "s|USER|$UNAME|" /$UNAME/.pip/pip.conf
-ADD coast-project.pem /$UNAME/
 RUN chown -R $UNAME:$GNAME /$UNAME/
 
 USER $UNAME
-ENV GIT_SSL_NO_VERIFY=true VENVDIR=/$UNAME/.venv27scons
+ENV VENVDIR=/$UNAME/.venv27scons
 RUN echo "[[ -d \"\$VENVDIR\" ]] && . $VENVDIR/bin/activate" >> $HOME/.bashrc
-
-#RUN echo "" | openssl s_client -connect devpi.coast-project.org:443 2>/dev/null \
-#| openssl x509 -text \
-#| sed -e '/-----BEGIN/p' -e '1,/-----BEGIN/d' > $HOME/coast-project.pem
 
 RUN cd $HOME && git clone --single-branch --branch master --depth 1 https://github.com/pypa/virtualenv.git
 RUN python2 $HOME/virtualenv/virtualenv.py $VENVDIR
-RUN cd $HOME && git clone --single-branch --branch master --depth 1 git://git.coast-project.org/coast.git
+RUN cd $HOME && git clone --single-branch --branch master --depth 1 https://gerrit.coast-project.org/p/coast.git
 RUN cd $HOME/coast && \
-    git clone --single-branch --branch master --depth 1 https://gerrit.coast-project.org/r/p/boost.git 3rdparty/boost &&\
-    git clone --single-branch --branch master --depth 1 https://gerrit.coast-project.org/r/p/wdscripts.git && \
-    git clone --single-branch --branch master --depth 1 https://gerrit.coast-project.org/r/p/recipes.git
+    git clone --single-branch --branch master --depth 1 https://gerrit.coast-project.org/p/boost.git 3rdparty/boost &&\
+    git clone --single-branch --branch master --depth 1 https://gerrit.coast-project.org/p/wdscripts.git && \
+    git clone --single-branch --branch master --depth 1 https://gerrit.coast-project.org/p/recipes.git
 
 RUN bash -l -c 'pip install -U -r $HOME/coast/requires.txt'
 
