@@ -8,7 +8,7 @@ RUN echo -e '[infinality-bundle]\nSigLevel=Never\nServer = http://bohoomil.com/r
 RUN pacman -Syy && \
     printf "\\ny\\ny\\n" | pacman -S  multilib-devel && \
     printf "y\\ny\\n" | pacman -Scc
-RUN pacman -S --noconfirm --quiet --noprogressbar --needed python2 git lib32-openssl gdb doxygen graphviz \
+RUN pacman -S --noconfirm --quiet --noprogressbar --needed python2 git lib32-openssl lib32-zlib gdb doxygen graphviz \
     fontconfig-infinality-ultimate ibfonts-meta-base && \
     printf "y\\ny\\n" | pacman -Scc
 RUN rm -f /var/lib/pacman/sync/*.db
@@ -31,6 +31,11 @@ RUN cd $HOME/coast && \
     git clone --single-branch --branch master --depth 1 https://gerrit.coast-project.org/p/recipes.git
 
 RUN bash -l -c 'pip install -U -r $HOME/coast/requires.txt'
+
+RUN bash -l -c 'cd $HOME/coast && \
+      scons -u --jobs=$(nproc) --with-src-boost=3rdparty/boost --ignore-missing --doxygen-only && \
+      scons -u --jobs=$(nproc) CoastRecipes --with-src-boost=3rdparty/boost && \
+      cd apps/CoastRecipes && ln -s ../../doc/Coast/html COASTDoc'
 
 USER root
 
