@@ -24,17 +24,19 @@ RUN echo "[[ -d \"\$VENVDIR\" ]] && . $VENVDIR/bin/activate" >> $HOME/.bashrc
 
 RUN cd $HOME && git clone --single-branch --branch master --depth 1 https://github.com/pypa/virtualenv.git
 RUN python2 $HOME/virtualenv/virtualenv.py $VENVDIR
-RUN cd $HOME && git clone --single-branch --branch master --depth 1 https://gerrit.coast-project.org/p/coast.git
+RUN cd $HOME && git clone --single-branch --branch master https://gerrit.coast-project.org/p/coast.git
 RUN cd $HOME/coast && \
-    git clone --single-branch --branch master --depth 1 https://gerrit.coast-project.org/p/boost.git 3rdparty/boost &&\
-    git clone --single-branch --branch master --depth 1 https://gerrit.coast-project.org/p/wdscripts.git && \
-    git clone --single-branch --branch master --depth 1 https://gerrit.coast-project.org/p/recipes.git
+    git clone --single-branch --branch master https://gerrit.coast-project.org/p/boost.git 3rdparty/boost &&\
+    git clone --single-branch --branch master https://gerrit.coast-project.org/p/wdscripts.git && \
+    git clone --single-branch --branch master https://gerrit.coast-project.org/p/recipes.git
 
 RUN bash -l -c 'pip install -U -r $HOME/coast/requires.txt'
 
+ENV SCONSFLAGS="--enable-Trace --with-src-boost=3rdparty/boost"
+
 RUN bash -l -c 'cd $HOME/coast && \
-      scons -u --jobs=$(nproc) --with-src-boost=3rdparty/boost --ignore-missing --doxygen-only && \
-      scons -u --jobs=$(nproc) CoastRecipes --with-src-boost=3rdparty/boost && \
+      scons -u --ignore-missing --doxygen-only && \
+      scons -u --jobs=$(nproc) CoastRecipes && \
       cd apps/CoastRecipes && ln -s ../../doc/Coast/html COASTDoc'
 
 USER root
